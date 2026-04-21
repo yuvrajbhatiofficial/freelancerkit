@@ -16,7 +16,8 @@ export function usePayment() {
           return;
         }
 
-        const res = await fetch('https://freelancerkit.onrender.com/api/user/status', {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://freelancerkit.onrender.com';
+        const res = await fetch(`${API_URL}/api/user/status`, {
           headers: {
             'Authorization': `Bearer ${session.access_token}`
           }

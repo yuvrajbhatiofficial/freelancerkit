@@ -78,7 +78,8 @@ export default function Settings() {
       }
 
       // We call our backend API to delete the account
-      const response = await fetch('https://freelancerkit.onrender.com/api/user/account', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://freelancerkit.onrender.com';
+      const response = await fetch(`${API_URL}/api/user/account`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${session.access_token}`
