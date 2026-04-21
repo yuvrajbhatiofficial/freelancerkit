@@ -36,7 +36,12 @@ app.use((req, res, next) => {
   }
 });
 
-app.use(cors({ origin: '*' })); // Restrict in production
+app.use(cors({
+  origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'https://freelancerkit.vercel.app'], // Add your deployed frontend URLs here or in Render's ENV
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Region'],
+  credentials: true
+}));
 
 // --- Rate Limiting ---
 app.set('trust proxy', 1); // Trust first proxy (Render, Vercel, Nginx, etc)

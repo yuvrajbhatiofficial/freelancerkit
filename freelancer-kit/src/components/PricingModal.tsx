@@ -30,8 +30,8 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
       }
 
       const endpoint = provider === 'razorpay'
-        ? 'http://localhost:4000/api/payments/create-razorpay-order'
-        : 'http://localhost:4000/api/payments/create-stripe-session';
+        ? 'https://freelancerkit.onrender.com/api/payments/create-razorpay-order'
+        : 'https://freelancerkit.onrender.com/api/payments/create-stripe-session';
 
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -76,7 +76,7 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
           order_id: orderId,
           handler: async function (response: any) {
             // Verify payment on backend
-            const verifyRes = await fetch('http://localhost:4000/api/payments/verify-razorpay', {
+            const verifyRes = await fetch('https://freelancerkit.onrender.com/api/payments/verify-razorpay', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

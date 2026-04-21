@@ -16,7 +16,7 @@ export function usePayment() {
           return;
         }
 
-        const res = await fetch('http://localhost:4000/api/user/status', {
+        const res = await fetch('https://freelancerkit.onrender.com/api/user/status', {
           headers: {
             'Authorization': `Bearer ${session.access_token}`
           }
