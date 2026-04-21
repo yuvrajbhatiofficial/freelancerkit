@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'https://freelancerkit.vercel.app'], // Add your deployed frontend URLs here or in Render's ENV
+  origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'https://freelancerkit-eosin.vercel.app'], // Add your deployed frontend URLs here or in Render's ENV
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Region'],
   credentials: true
