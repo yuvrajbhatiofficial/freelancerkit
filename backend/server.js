@@ -36,8 +36,25 @@ app.use((req, res, next) => {
   }
 });
 
+// Build resilient allowed origins list
+let allowedOrigins = ['http://localhost:3000', 'https://freelancerkit.vercel.app', 'https://freelancerkit-eosin.vercel.app'];
+if (process.env.FRONTEND_URL) {
+  let envUrl = process.env.FRONTEND_URL.trim();
+  if (!envUrl.startsWith('http')) {
+    envUrl = 'https://' + envUrl;
+  }
+  allowedOrigins.push(envUrl);
+  allowedOrigins.push(envUrl.replace(/\/$/, "")); // ensure trailing slash variants are valid
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'https://freelancerkit-eosin.vercel.app'], // Add your deployed frontend URLs here or in Render's ENV
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-User-Region'],
   credentials: true
