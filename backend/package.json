@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
