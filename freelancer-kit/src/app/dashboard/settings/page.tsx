@@ -10,11 +10,11 @@ export default function Settings() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
-  
+
   // Password state
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   // Delete account state
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -67,11 +67,11 @@ export default function Settings() {
       toast.error('Please type DELETE to confirm');
       return;
     }
-    
+
     setIsDeleting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         router.replace('/login');
         return;
@@ -112,9 +112,9 @@ export default function Settings() {
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-gray-950 transition-colors">
       <Toaster position="top-center" />
-      
+
       <div className="max-w-2xl mx-auto space-y-8">
-        
+
         <div className="flex items-center justify-between border-b pb-4 border-gray-200 dark:border-gray-800">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 dark:text-gray-100 tracking-tight">Account Settings</h1>
@@ -130,7 +130,7 @@ export default function Settings() {
             </div>
             <h2 className="text-xl font-bold text-slate-800 dark:text-gray-200">Change Password</h2>
           </div>
-          
+
           <form onSubmit={handleUpdatePassword} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">New Password</label>
@@ -197,7 +197,7 @@ export default function Settings() {
           <p className="text-sm text-red-700 dark:text-red-300 mb-4">
             Deleting your account is permanent. All your data, saved documents, and lifetime access will be permanently erased.
           </p>
-          
+
           <div className="space-y-4 max-w-sm">
             <div>
               <label className="block text-sm font-medium text-red-800 dark:text-red-200 mb-1">
