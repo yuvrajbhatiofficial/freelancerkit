@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { supabase } from '@/utils/supabaseClient';
 
 export default function LoginPage() {
@@ -20,6 +20,25 @@ export default function LoginPage() {
       return;
     }
 
+    if (!isLogin) {
+      if (password.length < 8) {
+        toast.error('Password must be at least 8 characters long');
+        return;
+      }
+      if (!/[A-Z]/.test(password)) {
+        toast.error('Password must contain at least one uppercase letter');
+        return;
+      }
+      if (!/[0-9]/.test(password)) {
+        toast.error('Password must contain at least one number');
+        return;
+      }
+      if (!/[!@#$%^&*]/.test(password)) {
+        toast.error('Password must contain at least one special character (!@#$%^&*)');
+        return;
+      }
+    }
+
     setLoading(true);
     let authError = null;
     let authData: any = null;
@@ -32,6 +51,12 @@ export default function LoginPage() {
         });
         authError = error;
         authData = data;
+        
+        if (error && error.message.includes('Invalid login credentials')) {
+          toast.error('Incorrect email or password. Please try again.');
+          setLoading(false);
+          return;
+        }
       } else {
         const { error, data } = await supabase.auth.signUp({
           email,
@@ -44,7 +69,9 @@ export default function LoginPage() {
         authData = data;
         
         if (!error && data.user && data.user.identities?.length === 0) {
-            authError = new Error('User already exists');
+            toast.error('This email is already registered. Please log in instead.');
+            setLoading(false);
+            return;
         }
       }
 
@@ -76,7 +103,7 @@ export default function LoginPage() {
       router.refresh();
       
     } catch (e: any) {
-      toast.error(e.message || 'Authentication failed');
+      toast.error(e?.message || 'Authentication failed. Please try again.');
       console.error(e);
     } finally {
       setLoading(false);
@@ -85,6 +112,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 selection:bg-blue-500/30">
+      <Toaster position="top-center" />
       <div className="w-full max-w-[420px] bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden shadow-2xl z-10 animate-fade-in">
         
         {/* Glow Effects */}

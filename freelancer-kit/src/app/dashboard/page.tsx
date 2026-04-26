@@ -86,8 +86,13 @@ export default function Home() {
         )}
 
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-extrabold text-slate-800 dark:text-gray-100 tracking-tight sm:text-5xl mb-4">
+          <h1 className="text-4xl font-extrabold text-slate-800 dark:text-gray-100 tracking-tight sm:text-5xl mb-4 flex items-center justify-center gap-3">
             Freelancer Document Kit
+            {isPaid && (
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-yellow-900 bg-gradient-to-r from-yellow-300 to-yellow-500 py-1 px-3 rounded-lg shadow-sm border border-yellow-400">
+                PRO
+              </span>
+            )}
           </h1>
           <p className="text-lg text-slate-500 dark:text-gray-400">
             Professional Invoices, Contracts & NDAs — instantly generated.

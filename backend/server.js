@@ -221,7 +221,7 @@ app.post('/api/payments/create-razorpay-order', authenticate, async (req, res) =
       return res.status(403).json({ error: 'Razorpay is only available for Indian users' });
     }
 
-    const amount = 100; // ₹1.00
+    const amount = 29900; // ₹299.00
     const currency = 'INR';
 
     const order = await razorpay.orders.create({
@@ -262,7 +262,7 @@ app.post('/api/payments/verify-razorpay', authenticate, async (req, res) => {
         data: {
           userId: req.user.id,
           provider: 'razorpay',
-          amount: 1,
+          amount: 299,
           currency: 'INR',
           status: 'success'
         }

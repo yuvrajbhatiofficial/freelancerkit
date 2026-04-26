@@ -18,7 +18,7 @@ export function useUserRegion() {
   }, []);
 
   const getPrice = () => {
-    if (isIndia) return '₹1';
+    if (isIndia) return '₹299';
     return '$3';
   };
 
