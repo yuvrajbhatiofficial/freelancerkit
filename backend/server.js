@@ -27,12 +27,16 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET || 'placeholder',
 });
 
-// Middleware for Stripe webhook (MUST be raw body)
+// Middleware for Stripe & Razorpay webhooks (Saving raw body for verification)
 app.use((req, res, next) => {
   if (req.originalUrl === '/api/webhooks/stripe') {
     express.raw({ type: 'application/json' })(req, res, next);
   } else {
-    express.json()(req, res, next);
+    express.json({
+      verify: (req, res, buf) => {
+        req.rawBody = buf;
+      }
+    })(req, res, next);
   }
 });
 
@@ -64,7 +68,7 @@ app.use(cors({
 app.set('trust proxy', 1); // Trust first proxy (Render, Vercel, Nginx, etc)
 
 const globalApiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
+  windowMs: 15 * 60 * 1000,
   max: 100,
   message: { error: 'Too many requests from this IP, please try again after 15 minutes' }
 });
@@ -158,7 +162,7 @@ app.delete('/api/user/account', authenticate, async (req, res) => {
         process.env.SUPABASE_URL || 'https://placeholder.supabase.co',
         process.env.SUPABASE_SERVICE_ROLE_KEY
       );
-      
+
       const { error: deleteAuthError } = await adminSupabase.auth.admin.deleteUser(userId);
       if (deleteAuthError) {
         console.error("Failed to delete user from Supabase Auth:", deleteAuthError);
@@ -217,13 +221,13 @@ app.post('/api/payments/create-razorpay-order', authenticate, async (req, res) =
       return res.status(403).json({ error: 'Razorpay is only available for Indian users' });
     }
 
-    const amount = 19900; // ₹199.00
+    const amount = 100; // ₹1.00
     const currency = 'INR';
 
     const order = await razorpay.orders.create({
       amount,
       currency,
-      receipt: `r_${req.user.id.substring(0,8)}_${Date.now()}`,
+      receipt: `r_${req.user.id.substring(0, 8)}_${Date.now()}`,
       notes: {
         userId: req.user.id,
       }
@@ -258,7 +262,7 @@ app.post('/api/payments/verify-razorpay', authenticate, async (req, res) => {
         data: {
           userId: req.user.id,
           provider: 'razorpay',
-          amount: 199,
+          amount: 1,
           currency: 'INR',
           status: 'success'
         }
@@ -319,30 +323,36 @@ app.post('/api/webhooks/stripe', async (req, res) => {
 });
 
 // 6. Razorpay Webhook
-app.post('/api/webhooks/razorpay', express.json(), async (req, res) => {
+app.post('/api/webhooks/razorpay', async (req, res) => {
   const secret = process.env.RAZORPAY_WEBHOOK_SECRET || 'placeholder';
   const sig = req.headers['x-razorpay-signature'];
 
-  const body = JSON.stringify(req.body);
-  const expectedSig = crypto.createHmac('sha256', secret).update(body).digest('hex');
+  try {
+    // Generate signature using the EXACT raw payload sent by Razorpay
+    const expectedSig = crypto.createHmac('sha256', secret).update(req.rawBody).digest('hex');
 
-  if (expectedSig === sig) {
-    if (req.body.event === 'payment.captured') {
-      const payment = req.body.payload.payment.entity;
-      const userId = payment.notes?.userId;
+    if (expectedSig === sig) {
+      if (req.body.event === 'payment.captured') {
+        const payment = req.body.payload.payment.entity;
+        const userId = payment.notes?.userId;
 
-      if (userId) {
-        // Create payment explicitly from webhook, if not already handled by verify endpoint
-        await prisma.subscription.upsert({
-          where: { userId: userId },
-          update: { isPaid: true, lifetimeAccess: true },
-          create: { userId: userId, isPaid: true, lifetimeAccess: true }
-        });
+        if (userId) {
+          // Create payment explicitly from webhook, if not already handled by verify endpoint
+          await prisma.subscription.upsert({
+            where: { userId: userId },
+            update: { isPaid: true, lifetimeAccess: true },
+            create: { userId: userId, isPaid: true, lifetimeAccess: true }
+          });
+        }
       }
+      res.status(200).json({ status: 'ok' });
+    } else {
+      console.warn("Invalid Razorpay webhook signature");
+      res.status(400).json({ status: 'invalid signature' });
     }
-    res.status(200).json({ status: 'ok' });
-  } else {
-    res.status(400).json({ status: 'invalid signature' });
+  } catch (error) {
+    console.error("Razorpay Webhook Error:", error);
+    res.status(400).json({ status: 'error', message: 'Webhook processing failed' });
   }
 });
 

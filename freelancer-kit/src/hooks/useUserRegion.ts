@@ -7,7 +7,7 @@ export function useUserRegion() {
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const locale = navigator.language;
-      
+
       if (timezone === 'Asia/Calcutta' || timezone === 'Asia/Kolkata' || locale.includes('IN')) {
         setIsIndia(true);
       }
@@ -18,7 +18,7 @@ export function useUserRegion() {
   }, []);
 
   const getPrice = () => {
-    if (isIndia) return '₹199';
+    if (isIndia) return '₹1';
     return '$3';
   };
 

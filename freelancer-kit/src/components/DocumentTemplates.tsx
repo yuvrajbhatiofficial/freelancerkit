@@ -4,13 +4,20 @@ import { FormData } from '@/types';
 interface Props {
   data: FormData;
   isPaid?: boolean;
+  isPreview?: boolean;
+  selectedTool?: 'invoice' | 'contract' | 'nda' | null;
 }
 
-export default function DocumentTemplates({ data, isPaid = false }: Props) {
+export default function DocumentTemplates({ data, isPaid = false, isPreview = false, selectedTool = null }: Props) {
+  const wrapperClass = isPreview 
+    ? "" 
+    : "absolute top-[200vh] -left-[9999px] pointer-events-none";
+
   return (
-    <div className="absolute top-[200vh] -left-[9999px] pointer-events-none" style={{ color: '#000000', backgroundColor: '#ffffff', borderColor: '#000000', textDecorationColor: '#000000', outlineColor: '#000000', columnRuleColor: '#000000' }}>
+    <div className={wrapperClass} style={{ color: '#000000', backgroundColor: '#ffffff', borderColor: '#000000', textDecorationColor: '#000000', outlineColor: '#000000', columnRuleColor: '#000000' }}>
       {/* 1. Invoice Template */}
-      <div id="invoice-template" className="bg-[#ffffff] text-[#1e293b] w-[800px] px-[40px] box-border text-[13px] font-sans border border-[#f3f4f6]">
+      {(!isPreview || selectedTool === 'invoice') && (
+        <div id={isPreview ? undefined : "invoice-template"} className="bg-[#ffffff] text-[#1e293b] w-[800px] px-[40px] box-border text-[13px] font-sans border border-[#f3f4f6]">
         {/* Top Header Block */}
         <div className="px-12 pt-16 pb-12">
           <h1 className="text-4xl font-bold text-[#64748b] tracking-tight mb-12">Invoice</h1>
@@ -146,9 +153,11 @@ export default function DocumentTemplates({ data, isPaid = false }: Props) {
           </div>
         )}
       </div>
+      )}
 
       {/* 2. Contract Template */}
-      <div id="contract-template" className="pb-16 bg-[#ffffff] text-[#111827] w-[800px] px-[40px] box-border text-[14px] leading-[1.8] font-serif">
+      {(!isPreview || selectedTool === 'contract') && (
+        <div id={isPreview ? undefined : "contract-template"} className="relative pb-16 bg-[#ffffff] text-[#111827] w-[800px] px-[40px] box-border text-[14px] leading-[1.8] font-serif">
         <div className="text-center mb-12 border-b-2 border-[#111827] pb-8 pt-8">
           <h1 className="text-3xl font-bold tracking-[0.15em] uppercase">Freelance Contract</h1>
         </div>
@@ -242,10 +251,12 @@ export default function DocumentTemplates({ data, isPaid = false }: Props) {
             </div>
           )}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* 3. NDA Template */}
-      <div id="nda-template" className="pb-16 bg-[#ffffff] text-[#111827] w-[800px] px-[40px] box-border text-[14px] leading-[1.8] font-serif">
+      {(!isPreview || selectedTool === 'nda') && (
+        <div id={isPreview ? undefined : "nda-template"} className="relative pb-16 bg-[#ffffff] text-[#111827] w-[800px] px-[40px] box-border text-[14px] leading-[1.8] font-serif">
         <div className="text-center mb-12 border-b-2 border-[#111827] pb-8 pt-8">
           <h1 className="text-3xl font-bold tracking-[0.15em] uppercase">Non-Disclosure Agreement</h1>
         </div>
@@ -322,7 +333,8 @@ export default function DocumentTemplates({ data, isPaid = false }: Props) {
             </div>
           )}
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

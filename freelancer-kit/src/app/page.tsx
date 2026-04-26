@@ -7,13 +7,13 @@ import { ArrowRight, FileSignature, FileText, Lock, CheckCircle2, Zap } from 'lu
 export default function LandingPage() {
   return (
     <div className="bg-slate-50 dark:bg-gray-950 min-h-screen font-sans overflow-hidden transition-colors">
-      
+
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col items-center text-center">
         <div className="absolute top-0 inset-x-0 h-[500px] bg-gradient-to-b from-blue-100/50 dark:from-blue-900/10 to-transparent -z-10" />
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-3xl -z-10" />
         <div className="absolute top-20 -left-20 w-72 h-72 bg-emerald-400/10 dark:bg-emerald-600/5 rounded-full blur-3xl -z-10" />
-        
+
         <div className="inline-flex items-center space-x-2 bg-white dark:bg-gray-900 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-800 shadow-sm mb-8 animate-fade-in-up">
           <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
           <span className="text-sm font-medium text-gray-600 dark:text-gray-300">v2.0 is now live</span>
@@ -22,13 +22,13 @@ export default function LandingPage() {
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-8 leading-tight max-w-4xl">
           Professional <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">freelance documents</span> in seconds.
         </h1>
-        
+
         <p className="text-lg sm:text-xl text-slate-600 dark:text-gray-400 mb-12 max-w-2xl leading-relaxed">
           Stop wasting time in Word. Generate beautifully formatted Invoices, NDAs, and Service Contracts with zero hassle and perfect PDF rendering.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4">
-          <Link 
+          <Link
             href="/dashboard"
             className="inline-flex justify-center items-center space-x-2 px-8 py-4 bg-gray-900 dark:bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-gray-800 dark:hover:bg-blue-500 hover:-translate-y-0.5 transition-all shadow-xl hover:shadow-2xl w-full sm:w-auto"
           >
@@ -90,37 +90,46 @@ export default function LandingPage() {
       </section>
 
       {/* Social Proof / Security */}
-      <section className="py-20 bg-gray-900 dark:bg-black text-white border-t border-gray-800">
+      <section className="py-20 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex p-4 bg-gray-800 dark:bg-gray-900 rounded-full mb-8">
-            <Zap className="w-8 h-8 text-yellow-400" />
+
+          <div className="inline-flex p-4 bg-gray-100 dark:bg-gray-900 rounded-full mb-8">
+            <Zap className="w-8 h-8 text-yellow-500" />
           </div>
-          <h2 className="text-3xl font-bold mb-6 text-white">100% Secure & Local</h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+
+          <h2 className="text-3xl font-bold mb-6">
+            100% Secure & Local
+          </h2>
+
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
             Your sensitive client information never leaves your device. Documents are generated directly inside your browser architecture using a native PDF engine. No databases, no tracking.
           </p>
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+
             <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              <span className="text-gray-300">No Sign Up Required</span>
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              <span className="text-gray-700 dark:text-gray-300">No Sign Up Required</span>
             </div>
+
             <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              <span className="text-gray-300">Total Privacy</span>
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              <span className="text-gray-700 dark:text-gray-300">Total Privacy</span>
             </div>
+
             <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              <span className="text-gray-300">Always Free</span>
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              <span className="text-gray-700 dark:text-gray-300">Always Free</span>
             </div>
+
           </div>
         </div>
       </section>
-
       {/* Bottom CTA */}
       <section className="py-32 bg-slate-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-900">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6">
           <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-8">Ready to get paid faster?</h2>
-          <Link 
+          <Link
             href="/dashboard"
             className="inline-flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2 px-10 py-5 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 hover:shadow-lg transition-all w-full sm:w-auto"
           >

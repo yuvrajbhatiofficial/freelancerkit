@@ -175,25 +175,22 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
           </div>
 
           <div className="space-y-3">
-            {isIndia ? (
-              <div className="space-y-3">
-                <button
-                  onClick={() => handlePayment('razorpay')}
-                  disabled={loadingConfig !== null}
-                  className="w-full flex items-center justify-center py-3.5 px-4 bg-[#3395FF] hover:bg-[#2B80EB] text-white font-bold rounded-xl shadow-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {loadingConfig === 'razorpay' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Verify & Pay via Razorpay"}
-                </button>
-              </div>
-            ) : (
+            {isIndia && (
               <button
-                onClick={() => handlePayment('stripe')}
+                onClick={() => handlePayment('razorpay')}
                 disabled={loadingConfig !== null}
-                className="w-full flex items-center justify-center py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center py-3.5 px-4 bg-[#3395FF] hover:bg-[#2B80EB] text-white font-bold rounded-xl shadow-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {loadingConfig === 'stripe' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Verify & Pay to Unlock"}
+                {loadingConfig === 'razorpay' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Verify & Pay via Razorpay"}
               </button>
             )}
+            <button
+              onClick={() => handlePayment('stripe')}
+              disabled={loadingConfig !== null}
+              className="w-full flex items-center justify-center py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {loadingConfig === 'stripe' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (isIndia ? "Verify & Pay via Stripe" : "Verify & Pay to Unlock")}
+            </button>
             
             <button
               onClick={onClose}

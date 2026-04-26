@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Box, ArrowRight } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -20,6 +21,8 @@ export default function Navbar() {
           </Link>
 
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
+            
             {!pathname.startsWith('/dashboard') ? (
               <Link 
                 href="/dashboard"

@@ -59,8 +59,10 @@ export default function ActionButtons({ isFormValid, selectedTool }: Props) {
     }
   };
 
+  const isLocked = !isPaid && selectedTool !== 'invoice';
+
   const handlePrimaryClick = () => {
-    if (!isPaid && selectedTool !== 'invoice') {
+    if (isLocked) {
       setShowPricing(true);
       return;
     }
@@ -68,7 +70,7 @@ export default function ActionButtons({ isFormValid, selectedTool }: Props) {
   };
 
   const handleDownloadAll = async () => {
-    if (!isPaid) {
+    if (isLocked) {
       setShowPricing(true);
       return;
     }
@@ -78,7 +80,6 @@ export default function ActionButtons({ isFormValid, selectedTool }: Props) {
     await generatePDF('nda');
   };
 
-  const isLocked = !isPaid && selectedTool !== 'invoice';
   const displayTitle = selectedTool.charAt(0).toUpperCase() + selectedTool.slice(1);
 
   return (
@@ -88,15 +89,15 @@ export default function ActionButtons({ isFormValid, selectedTool }: Props) {
         disabled={generating}
         className={`flex items-center justify-center space-x-3 w-full sm:w-auto px-6 sm:px-10 py-4 sm:py-5 font-bold rounded-xl shadow-md transition-all hover:shadow-lg active:scale-95 disabled:cursor-wait
           ${isLocked 
-            ? 'bg-slate-800 hover:bg-slate-900 text-white dark:bg-gray-800 dark:hover:bg-gray-700 opacity-90' 
+            ? 'bg-amber-500 hover:bg-amber-600 text-white' 
             : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-75'
           }`}
       >
         {generating ? <Loader2 className="w-6 h-6 animate-spin" /> : (
-          isLocked ? <Lock className="w-6 h-6 text-yellow-400" /> : <DownloadCloud className="w-6 h-6" />
+          isLocked ? <Lock className="w-6 h-6 text-white/90" /> : <DownloadCloud className="w-6 h-6" />
         )}
         <span className="text-lg">
-          {isLocked ? `Unlock ${displayTitle}` : `Download ${displayTitle} ${!isPaid ? '(Free)' : ''}`}
+          {isLocked ? `Unlock Content` : `Download ${displayTitle} ${!isPaid ? '(Free)' : ''}`}
         </span>
       </button>
 

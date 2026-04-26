@@ -9,6 +9,7 @@ import ToolSelection from '@/components/ToolSelection';
 import FormSection from '@/components/FormSection';
 import ActionButtons from '@/components/ActionButtons';
 import DocumentTemplates from '@/components/DocumentTemplates';
+import DocumentPreview from '@/components/DocumentPreview';
 import { FormData } from '@/types';
 import { usePayment } from '@/hooks/usePayment';
 import { useUserRegion } from '@/hooks/useUserRegion';
@@ -62,7 +63,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-gray-950 transition-colors">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-gray-950 transition-colors duration-300">
       <Toaster position="top-center" />
       
       <div className="max-w-4xl mx-auto">
@@ -120,7 +121,7 @@ export default function Home() {
             <button onClick={() => setCurrentStep(1)} className="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
               <ArrowLeft className="w-4 h-4 mr-1" /> Back to Selection
             </button>
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 md:p-8">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 md:p-8 transition-colors duration-300">
               <FormSection data={formData} onChange={handleInputChange} selectedTool={selectedTool} />
             </div>
             <div className="flex justify-end pt-4">
@@ -145,13 +146,15 @@ export default function Home() {
             <button onClick={() => setCurrentStep(2)} className="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
               <ArrowLeft className="w-4 h-4 mr-1" /> Back to Form
             </button>
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 md:p-8">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 md:p-8 transition-colors duration-300">
+              <DocumentPreview formData={formData} selectedTool={selectedTool} isPaid={isPaid} />
               <ActionButtons isFormValid={isFormValid} selectedTool={selectedTool} />
             </div>
           </div>
         )}
 
-        <DocumentTemplates data={formData} isPaid={isPaid} />
+        {/* Hidden templates for PDF generation */}
+        <DocumentTemplates data={formData} isPaid={isPaid} isPreview={false} />
       </div>
     </div>
   );
