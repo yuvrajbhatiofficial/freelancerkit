@@ -19,7 +19,7 @@ export function useUserRegion() {
 
   const getPrice = () => {
     if (isIndia) return '₹299';
-    return '$3';
+    return '$10';
   };
 
   const getPaymentLink = () => {
