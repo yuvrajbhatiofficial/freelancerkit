@@ -25,7 +25,7 @@ export function useUserRegion() {
   const getPaymentLink = () => {
     // Return placeholder links since actual links were not provided
     if (isIndia) return 'https://rzp.io/l/placeholder_freelancekit';
-    return 'https://buy.stripe.com/placeholder_freelancekit';
+    return 'https://buy.polar.sh/placeholder_freelancekit';
   };
 
   return { isIndia, getPrice, getPaymentLink };

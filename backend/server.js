@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const { createClient } = require('@supabase/supabase-js');
-const Stripe = require('stripe');
+const { Polar } = require('@polar-sh/sdk');
+const { validateEvent } = require('@polar-sh/sdk/webhooks');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const rateLimit = require('express-rate-limit');
@@ -18,8 +19,9 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY || 'placeholder'
 );
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-06-20',
+const polar = new Polar({
+  accessToken: process.env.POLAR_ACCESS_TOKEN || 'placeholder',
+  server: process.env.POLAR_MODE || 'sandbox',
 });
 
 const razorpay = new Razorpay({
@@ -27,9 +29,9 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET || 'placeholder',
 });
 
-// Middleware for Stripe & Razorpay webhooks (Saving raw body for verification)
+// Middleware for Polar & Razorpay webhooks (Saving raw body for verification)
 app.use((req, res, next) => {
-  if (req.originalUrl === '/api/webhooks/stripe') {
+  if (req.originalUrl === '/api/webhooks/polar') {
     express.raw({ type: 'application/json' })(req, res, next);
   } else {
     express.json({
@@ -178,36 +180,24 @@ app.delete('/api/user/account', authenticate, async (req, res) => {
   }
 });
 
-// 2. Create Stripe Checkout Session
-app.post('/api/payments/create-stripe-session', authenticate, async (req, res) => {
+// 2. Create Polar Checkout Session
+app.post('/api/payments/create-polar-checkout', authenticate, async (req, res) => {
   try {
     const userRegion = req.headers['x-user-region'] || 'GLOBAL';
     if (userRegion === 'IN') {
       return res.status(403).json({ error: 'Indian users must use Razorpay' });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'FreelanceKit Premium Lifetime Access',
-            },
-            unit_amount: 300, // $3.00
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'payment',
-      success_url: `${req.headers.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin}/dashboard`,
-      client_reference_id: req.user.id,
-      customer_email: req.user.email,
+    const checkout = await polar.checkouts.create({
+      products: [process.env.POLAR_PRODUCT_ID || process.env.POLAR_PRODUCT_PRICE_ID || 'placeholder'],
+      successUrl: `${req.headers.origin}/success?checkout_id={CHECKOUT_ID}`,
+      customerEmail: req.user.email,
+      metadata: {
+        userId: req.user.id,
+      },
     });
 
-    res.json({ url: session.url });
+    res.json({ url: checkout.url });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -281,45 +271,51 @@ app.post('/api/payments/verify-razorpay', authenticate, async (req, res) => {
   }
 });
 
-// 5. Stripe Webhook
-app.post('/api/webhooks/stripe', async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
-
+// 5. Polar Webhook
+app.post('/api/webhooks/polar', async (req, res) => {
   try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET || 'whsec_placeholder'
-    );
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
+    const webhookSecret = process.env.POLAR_WEBHOOK_SECRET || 'placeholder';
+    const event = validateEvent(req.body, req.headers, webhookSecret);
 
-  // Handle the checkout.session.completed event
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const userId = session.client_reference_id;
+    if (event.type === 'checkout.updated' && event.data.status === 'succeeded') {
+      const checkout = event.data;
+      const userId = checkout.metadata?.userId;
 
-    if (userId) {
-      await prisma.payment.create({
-        data: {
-          userId: userId,
-          provider: 'stripe',
-          amount: session.amount_total / 100,
-          currency: session.currency,
-          status: 'success'
+      if (userId) {
+        await prisma.payment.create({
+          data: {
+            userId: userId,
+            provider: 'polar',
+            amount: checkout.amount_total ? checkout.amount_total / 100 : 3, // Fallback to 3 if unavailable
+            currency: checkout.currency || 'usd',
+            status: 'success'
+          }
+        });
+
+        await prisma.subscription.update({
+          where: { userId: userId },
+          data: { isPaid: true, lifetimeAccess: true }
+        });
+      }
+    } else if (event.type === 'order.created') {
+        const order = event.data;
+        const userId = order.metadata?.userId || order.checkout?.metadata?.userId; // Fallback logic
+
+        if (userId) {
+            // Usually we upgrade here if we only listen to order.created
+             await prisma.subscription.upsert({
+               where: { userId: userId },
+               update: { isPaid: true, lifetimeAccess: true },
+               create: { userId: userId, isPaid: true, lifetimeAccess: true }
+             });
         }
-      });
-
-      await prisma.subscription.update({
-        where: { userId: userId },
-        data: { isPaid: true, lifetimeAccess: true }
-      });
     }
-  }
 
-  res.send();
+    res.status(200).send();
+  } catch (error) {
+    console.error("Polar Webhook Error:", error);
+    res.status(403).send('Invalid webhook signature');
+  }
 });
 
 // 6. Razorpay Webhook

@@ -12,17 +12,17 @@ interface Props {
 }
 
 export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }: Props) {
-  const [loadingConfig, setLoadingConfig] = useState<'stripe' | 'razorpay' | null>(null);
+  const [loadingConfig, setLoadingConfig] = useState<'polar' | 'razorpay' | null>(null);
   const { isIndia } = useUserRegion();
 
   if (!isOpen) return null;
 
-  const handlePayment = async (provider: 'stripe' | 'razorpay') => {
+  const handlePayment = async (provider: 'polar' | 'razorpay') => {
     try {
       setLoadingConfig(provider);
-      
+
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         toast('Please login to continue with your purchase', { icon: '🔐' });
         window.location.href = '/login';
@@ -32,7 +32,7 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
       const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://freelancerkit.onrender.com';
       const endpoint = provider === 'razorpay'
         ? `${API_URL}/api/payments/create-razorpay-order`
-        : `${API_URL}/api/payments/create-stripe-session`;
+        : `${API_URL}/api/payments/create-polar-checkout`;
 
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -50,10 +50,10 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
       }
 
       const data = await res.json();
-      
+
       if (provider === 'razorpay') {
         const { orderId, amount, currency, keyId } = data;
-        
+
         // Dynamically load Razorpay script
         const loadScript = () => new Promise((resolve) => {
           const script = document.createElement('script');
@@ -90,7 +90,7 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
                 razorpay_signature: response.razorpay_signature
               })
             });
-            
+
             if (verifyRes.ok) {
               window.location.href = '/success';
             } else {
@@ -113,7 +113,7 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
         if (data.url) {
           window.location.href = data.url;
         } else {
-          throw new Error('Invalid Stripe session URL');
+          throw new Error('Invalid Polar checkout URL');
         }
       }
 
@@ -127,14 +127,14 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div 
+      <div
         className="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
         onClick={onClose}
       />
-      
+
       <div className="relative bg-white dark:bg-gray-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-slide-up ring-1 ring-gray-200 dark:ring-gray-800">
-        
-        <button 
+
+        <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-full transition-colors"
         >
@@ -185,13 +185,13 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
               </button>
             )}
             <button
-              onClick={() => handlePayment('stripe')}
+              onClick={() => handlePayment('polar')}
               disabled={loadingConfig !== null}
               className="w-full flex items-center justify-center py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {loadingConfig === 'stripe' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (isIndia ? "Verify & Pay via Stripe" : "Verify & Pay to Unlock")}
+              {loadingConfig === 'polar' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (isIndia ? "Verify & Pay via Polar" : "Verify & Pay to Unlock")}
             </button>
-            
+
             <button
               onClick={onClose}
               disabled={loadingConfig !== null}
@@ -201,7 +201,7 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
             </button>
           </div>
         </div>
-        
+
       </div>
     </div>
   );
