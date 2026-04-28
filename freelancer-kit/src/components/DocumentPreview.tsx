@@ -54,7 +54,7 @@ export default function DocumentPreview({ formData, selectedTool, isPaid }: Prop
       >
         {/* Scaled Inner Content */}
         <div 
-          className={`origin-top absolute top-4 shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10 ${!isPaid ? 'blur-[1.5px] opacity-80 pointer-events-none' : ''}`}
+          className="origin-top absolute top-4 shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10"
           style={{ transform: `scale(${scale})`, width: '800px' }}
         >
           <DocumentTemplates 
@@ -65,16 +65,6 @@ export default function DocumentPreview({ formData, selectedTool, isPaid }: Prop
           />
         </div>
 
-        {/* Watermark Overlay for screenshot protection */}
-        {!isPaid && (
-          <div className="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center overflow-hidden mix-blend-multiply dark:mix-blend-overlay">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="transform -rotate-45 text-[3rem] sm:text-[5rem] font-black text-slate-400 dark:text-white whitespace-nowrap opacity-30 tracking-widest my-4">
-                PREVIEW ONLY
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

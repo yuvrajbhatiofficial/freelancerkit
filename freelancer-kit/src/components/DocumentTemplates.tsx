@@ -20,11 +20,18 @@ export default function DocumentTemplates({ data, isPaid = false, isPreview = fa
         <div id={isPreview ? undefined : "invoice-template"} className="bg-[#ffffff] text-[#1e293b] w-[800px] px-[40px] box-border text-[13px] font-sans border border-[#f3f4f6]">
         {/* Top Header Block */}
         <div className="px-12 pt-16 pb-12">
-          <h1 className="text-4xl font-bold text-[#64748b] tracking-tight mb-12">Invoice</h1>
+          <div className="flex justify-between items-start mb-12">
+            {data.logoUrl ? (
+              <img src={data.logoUrl} alt="Logo" className="max-h-16 max-w-[200px] object-contain" />
+            ) : (
+              <h1 className="text-4xl font-bold tracking-tight" style={{ color: data.themeColor }}>Invoice</h1>
+            )}
+            {data.logoUrl && <h1 className="text-4xl font-bold tracking-tight" style={{ color: data.themeColor }}>Invoice</h1>}
+          </div>
 
           <div className="grid grid-cols-3 gap-8">
             <div>
-              <h3 className="text-xs font-bold text-[#64748b] mb-2 uppercase">Your Company Name</h3>
+              <h3 className="text-xs font-bold mb-2 uppercase" style={{ color: data.themeColor }}>Your Company Name</h3>
               {data.companyName ? <p className="font-semibold">{data.companyName}</p> : <p className="font-semibold">{data.name || 'Your Name'}</p>}
               <p className="whitespace-pre-wrap leading-relaxed mt-1">{data.freelancerAddress || 'Building name\n123 Your Street\nCity, State, Country\nPostcode\nPhone'}</p>
             </div>
@@ -34,21 +41,21 @@ export default function DocumentTemplates({ data, isPaid = false, isPreview = fa
               {data.companyWebsite && <p>{data.companyWebsite}</p>}
             </div>
             <div>
-              <h3 className="text-xs font-bold text-[#64748b] mb-2 uppercase">Invoice Number</h3>
-              <p>00001</p>
-              <h3 className="text-xs font-bold text-[#64748b] mt-6 mb-2 uppercase">Invoice Date</h3>
+              <h3 className="text-xs font-bold mb-2 uppercase" style={{ color: data.themeColor }}>Invoice Number</h3>
+              <p>{data.invoiceNumber || '00001'}</p>
+              <h3 className="text-xs font-bold mt-6 mb-2 uppercase" style={{ color: data.themeColor }}>Invoice Date</h3>
               <p>{data.startDate || 'MM/DD/YYYY'}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-8 mt-12">
             <div>
-              <h3 className="text-xs font-bold text-[#64748b] mb-2 uppercase">Billed To</h3>
+              <h3 className="text-xs font-bold mb-2 uppercase" style={{ color: data.themeColor }}>Billed To</h3>
               <p className="font-semibold">{data.clientName || 'Client Name'}</p>
               <p className="whitespace-pre-wrap leading-relaxed mt-1 text-[#334155]">{data.clientAddress || 'Street address\nCity, State, Country\nZIP Code\nPhone'}</p>
             </div>
             <div>
-              <h3 className="text-xs font-bold text-[#64748b] mb-2 uppercase">Project Details</h3>
+              <h3 className="text-xs font-bold mb-2 uppercase" style={{ color: data.themeColor }}>Project Details</h3>
               <p className="font-semibold">{data.projectName || 'Project name'}</p>
               <p className="whitespace-pre-wrap leading-relaxed mt-1 text-[#334155]">{data.projectDescription || 'Project Description'}</p>
             </div>
@@ -60,55 +67,48 @@ export default function DocumentTemplates({ data, isPaid = false, isPreview = fa
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-[#cbd5e1]">
-                <th className="py-3 font-bold text-[11px] text-[#64748b] uppercase tracking-widest w-1/4">Date</th>
-                <th className="py-3 font-bold text-[11px] text-[#64748b] uppercase tracking-widest w-1/2">Description</th>
-                <th className="py-3 font-bold text-[11px] text-[#64748b] uppercase tracking-widest text-right w-1/4">Hours</th>
+                <th className="py-3 font-bold text-[11px] uppercase tracking-widest w-1/2" style={{ color: data.themeColor }}>Description</th>
+                <th className="py-3 font-bold text-[11px] uppercase tracking-widest text-right w-1/4" style={{ color: data.themeColor }}>Hrs/Qty</th>
+                <th className="py-3 font-bold text-[11px] uppercase tracking-widest text-right w-1/4" style={{ color: data.themeColor }}>Rate</th>
+                <th className="py-3 font-bold text-[11px] uppercase tracking-widest text-right w-1/4" style={{ color: data.themeColor }}>Amount</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="py-4 align-top text-[#334155] pr-4">{data.startDate || '__________'}</td>
-                <td className="py-4 align-top text-[#334155] pr-4">{data.projectName ? `${data.projectName} Services` : 'Freelance Services'}</td>
-                <td className="py-4 align-top text-right text-[#1e293b] font-medium">¤{data.hours || '00:00'}</td>
-              </tr>
-              {[...Array(6)].map((_, i) => (
-                <tr key={i}>
-                  <td className="py-2"></td>
-                  <td className="py-2"></td>
-                  <td className="py-2 text-right text-[#94a3b8]">¤00:00</td>
+              {data.invoiceItems && data.invoiceItems.map((item, i) => (
+                <tr key={i} className="border-b border-[#f1f5f9] last:border-0">
+                  <td className="py-4 align-top text-[#334155] pr-4">{item.description || '-'}</td>
+                  <td className="py-4 align-top text-right text-[#334155] pr-4">{item.hours || '0'}</td>
+                  <td className="py-4 align-top text-right text-[#334155] pr-4">{data.currency}{item.rate || '0.00'}</td>
+                  <td className="py-4 align-top text-right text-[#1e293b] font-medium">{data.currency}{item.amount || '0.00'}</td>
                 </tr>
               ))}
+              {(!data.invoiceItems || data.invoiceItems.length === 0) && (
+                <tr>
+                  <td className="py-4 align-top text-[#334155] pr-4">Freelance Services</td>
+                  <td className="py-4 align-top text-right text-[#334155] pr-4">0</td>
+                  <td className="py-4 align-top text-right text-[#334155] pr-4">{data.currency}0.00</td>
+                  <td className="py-4 align-top text-right text-[#1e293b] font-medium">{data.currency}0.00</td>
+                </tr>
+              )}
               <tr>
-                <td colSpan={3} className="border-b border-[#cbd5e1] pt-6"></td>
+                <td colSpan={4} className="border-b border-[#cbd5e1] pt-6"></td>
               </tr>
             </tbody>
           </table>
 
           <div className="flex justify-end mt-8">
             <div className="w-[280px]">
-              <div className="flex justify-between py-1.5 text-xs font-bold text-[#64748b] uppercase">
-                <span>Total Hours</span>
-                <span className="text-[#1e293b]">{data.hours || '0'}</span>
+              <div className="flex justify-between py-1.5 text-xs font-bold uppercase" style={{ color: data.themeColor }}>
+                <span>Subtotal</span>
+                <span className="text-[#1e293b]">{data.currency}{data.amount || '0.00'}</span>
               </div>
-              <div className="flex justify-between py-1.5 text-xs font-bold text-[#64748b] uppercase">
-                <span>Hourly Rate</span>
-                <span className="text-[#1e293b]">${data.hourlyRate || '0.00'}</span>
-              </div>
-              <div className="flex justify-between py-1.5 text-xs font-bold text-[#64748b] uppercase">
+              <div className="flex justify-between py-1.5 text-xs font-bold uppercase" style={{ color: data.themeColor }}>
                 <span>Discount</span>
-                <span className="text-[#1e293b]">-${data.discount || '0.00'}</span>
+                <span className="text-[#1e293b]">-{data.currency}{data.discount || '0.00'}</span>
               </div>
-              <div className="flex justify-between py-1.5 text-xs font-bold text-[#64748b] uppercase mt-4">
-                <span>Total Pre-Tax</span>
-                <span className="text-[#1e293b]">${data.amount || '0.00'}</span>
-              </div>
-              <div className="flex justify-between py-1.5 text-xs font-bold text-[#64748b] uppercase">
-                <span>(Tax Rate)</span>
-                <span className="text-[#1e293b]">{data.taxRate || '0'}%</span>
-              </div>
-              <div className="flex justify-between py-1.5 text-xs font-bold text-[#64748b] uppercase">
-                <span>Tax</span>
-                <span className="text-[#1e293b]">${(Number(data.amount || 0) * (Number(data.taxRate || 0) / 100)).toFixed(2)}</span>
+              <div className="flex justify-between py-1.5 text-xs font-bold uppercase" style={{ color: data.themeColor }}>
+                <span>{data.taxName || 'Tax'} ({data.taxRate || '0'}%)</span>
+                <span className="text-[#1e293b]">{data.currency}{((Number(data.amount || 0) - Number(data.discount || 0)) * (Number(data.taxRate || 0) / 100)).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -117,19 +117,22 @@ export default function DocumentTemplates({ data, isPaid = false, isPreview = fa
         {/* Bottom White Block */}
         <div className="bg-[#ffffff] px-12 py-10 pb-16">
           <div className="flex justify-end mb-16 border-b border-[#f1f5f9] pb-4">
-            <div className="w-[280px] flex justify-between items-center text-xs font-bold text-[#64748b] uppercase">
+            <div className="w-[280px] flex justify-between items-center text-xs font-bold uppercase" style={{ color: data.themeColor }}>
               <span>Invoice Total</span>
-              <span className="text-xl text-[#1e293b] font-bold">${(Number(data.amount || 0) + Number(data.amount || 0) * (Number(data.taxRate || 0) / 100) - Number(data.discount || 0)).toFixed(2)}</span>
+              <span className="text-xl font-bold" style={{ color: data.themeColor }}>
+                {data.currency}{((Number(data.amount || 0) - Number(data.discount || 0)) * (1 + Number(data.taxRate || 0) / 100)).toFixed(2)}
+              </span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-8">
             <div>
-              <h3 className="text-xs font-bold text-[#64748b] mb-2 uppercase">Terms</h3>
-              <p className="text-[#64748b]">Please pay invoice by {data.endDate || 'MM/DD/YYYY'}</p>
+              <h3 className="text-xs font-bold mb-2 uppercase" style={{ color: data.themeColor }}>Terms & Notes</h3>
+              <p className="text-[#64748b] mb-2">Please pay invoice by <span className="font-bold text-[#1e293b]">{data.endDate || 'MM/DD/YYYY'}</span></p>
+              {data.notes && <p className="text-[#64748b] whitespace-pre-wrap text-xs">{data.notes}</p>}
             </div>
             <div>
-              <h3 className="text-xs font-bold text-[#64748b] mb-3 uppercase">Bank Account Details</h3>
+              <h3 className="text-xs font-bold mb-3 uppercase" style={{ color: data.themeColor }}>Bank Account Details</h3>
               <div className="grid grid-cols-[120px_1fr] gap-y-1.5 text-sm">
                 <span className="text-[#334155]">Account holder:</span>
                 <span className="text-[#1e293b] font-medium">{data.accountHolder || '__________'}</span>
@@ -172,7 +175,7 @@ export default function DocumentTemplates({ data, isPaid = false, isPreview = fa
         <div className="space-y-6 text-justify">
           <p><strong>1. Services.</strong> Independent Contractor shall provide the following services to Client (the "Services"): <span className="font-bold ml-1">{data.projectName ? `${data.projectName} - ${data.projectDescription}` : '__________'}</span>. In addition, Independent Contractor shall perform such other duties and tasks, or changes to the Services, as may be agreed upon by the Parties.</p>
 
-          <p><strong>2. Compensation.</strong> In consideration for Independent Contractor's performance of the Services, Client shall pay Independent Contractor <span className="font-bold">₹{data.amount || '0'}</span>.</p>
+          <p><strong>2. Compensation.</strong> In consideration for Independent Contractor's performance of the Services, Client shall pay Independent Contractor <span className="font-bold">{data.currency || '₹'}{data.amount || '0'}</span>.</p>
 
           <p><strong>3. Expenses.</strong> All costs and expenses incurred by Independent Contractor in connection with the performance of the Services shall be the sole responsibility of and paid by Independent Contractor.</p>
 

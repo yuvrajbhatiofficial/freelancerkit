@@ -29,4 +29,13 @@ export interface FormData {
   accountNumber: string;
   abaRouting: string;
   wireRouting: string;
+
+  // Invoice Specific Enhancements
+  invoiceItems: { description: string; hours: string; rate: string; amount: string; }[];
+  logoUrl: string;
+  themeColor: string;
+  currency: string;
+  taxName: string;
+  invoiceNumber: string;
+  notes: string;
 }

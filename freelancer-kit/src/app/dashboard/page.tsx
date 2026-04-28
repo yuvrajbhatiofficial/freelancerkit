@@ -36,12 +36,14 @@ export default function Home() {
   const [formData, setFormData] = useState<FormData>({
     name: '', email: '', freelancerAddress: '', companyName: '', companyWebsite: '', companyPhone: '',
     clientName: '', clientAddress: '', projectName: '', projectDescription: '',
-    amount: '', hourlyRate: '', hours: '', taxRate: '', discount: '',
+    amount: '', hourlyRate: '', hours: '', taxRate: '0', discount: '0',
     startDate: '', endDate: '', nonCompeteMonths: '12', nonSolicitMonths: '12', governingState: '',
     accountHolder: '', accountNumber: '', abaRouting: '', wireRouting: '',
+    invoiceItems: [{ description: '', hours: '', rate: '', amount: '' }],
+    logoUrl: '', themeColor: '#1e293b', currency: '$', taxName: 'Tax', invoiceNumber: '00001', notes: '',
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -66,7 +68,7 @@ export default function Home() {
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-gray-950 transition-colors duration-300">
       <Toaster position="top-center" />
       
-      <div className="max-w-4xl mx-auto">
+      <div className={`mx-auto transition-all duration-500 ${currentStep === 2 ? 'max-w-[1400px]' : 'max-w-4xl'}`}>
         
         {!isPaid && (
           <div className="bg-gradient-to-r from-blue-600/10 to-indigo-600/10 border border-blue-200 dark:border-blue-900 rounded-xl p-4 mb-8 text-center sm:flex sm:items-center sm:justify-between sm:text-left transition-colors">
@@ -103,17 +105,12 @@ export default function Home() {
         <div className="mb-8 flex items-center justify-center space-x-1 sm:space-x-4">
           <div className={`flex items-center space-x-2 ${currentStep >= 1 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-600'}`}>
             <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 1 ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-500'}`}>1</span>
-            <span className="font-medium hidden sm:block">Select</span>
+            <span className="font-medium hidden sm:block">Select Tool</span>
           </div>
-          <div className="w-8 sm:w-12 h-px bg-gray-300 dark:bg-gray-800"></div>
+          <div className="w-16 sm:w-24 h-px bg-gray-300 dark:bg-gray-800"></div>
           <div className={`flex items-center space-x-2 ${currentStep >= 2 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-600'}`}>
             <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 2 ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-500'}`}>2</span>
-            <span className="font-medium hidden sm:block">Fill Details</span>
-          </div>
-          <div className="w-8 sm:w-12 h-px bg-gray-300 dark:bg-gray-800"></div>
-          <div className={`flex items-center space-x-2 ${currentStep >= 3 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-600'}`}>
-            <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${currentStep >= 3 ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-500'}`}>3</span>
-            <span className="font-medium hidden sm:block">Generate</span>
+            <span className="font-medium hidden sm:block">Edit & Preview</span>
           </div>
         </div>
 
@@ -122,38 +119,41 @@ export default function Home() {
         )}
 
         {currentStep === 2 && (
-          <div className="space-y-6">
-            <button onClick={() => setCurrentStep(1)} className="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
+          <div className="space-y-6 max-w-full">
+            <button onClick={() => setCurrentStep(1)} className="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors mb-6">
               <ArrowLeft className="w-4 h-4 mr-1" /> Back to Selection
             </button>
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 md:p-8 transition-colors duration-300">
-              <FormSection data={formData} onChange={handleInputChange} selectedTool={selectedTool} />
-            </div>
-            <div className="flex justify-end pt-4">
-              <button
-                disabled={!isFormValid}
-                onClick={() => setCurrentStep(3)}
-                className="py-3 px-8 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm disabled:opacity-50 dark:disabled:opacity-40 transition-colors w-full sm:w-auto"
-              >
-                Next Step
-              </button>
-            </div>
-            {!isFormValid && (
-              <p className="text-sm text-center sm:text-right text-red-500 dark:text-red-400 mt-2">
-                Please enter your name and client name to continue.
-              </p>
-            )}
-          </div>
-        )}
+            
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
+              {/* Form Sidebar */}
+              <div className="lg:col-span-5 xl:col-span-4 h-auto lg:h-[calc(100vh-120px)] overflow-y-auto pr-2 custom-scrollbar pb-8 lg:pb-32">
+                <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 transition-colors duration-300">
+                  <FormSection data={formData} onChange={handleInputChange} setFormData={setFormData} selectedTool={selectedTool} />
+                </div>
+              </div>
 
-        {currentStep === 3 && (
-          <div className="space-y-6">
-            <button onClick={() => setCurrentStep(2)} className="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors">
-              <ArrowLeft className="w-4 h-4 mr-1" /> Back to Form
-            </button>
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 md:p-8 transition-colors duration-300">
-              <DocumentPreview formData={formData} selectedTool={selectedTool} isPaid={isPaid} />
-              <ActionButtons isFormValid={isFormValid} selectedTool={selectedTool} />
+              {/* Live Preview & Actions */}
+              <div className="lg:col-span-7 xl:col-span-8 lg:sticky lg:top-6 lg:h-[calc(100vh-48px)] flex flex-col space-y-6 overflow-y-auto custom-scrollbar pb-8 lg:pr-2">
+                <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-slate-200 dark:border-gray-800 p-6 transition-colors duration-300 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-200">Ready to Generate?</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Review your document below before downloading.</p>
+                  </div>
+                  <div className="mt-4 sm:mt-0 flex flex-col items-end">
+                    <ActionButtons isFormValid={isFormValid} selectedTool={selectedTool} />
+                    {!isFormValid && (
+                      <p className="text-xs text-right text-red-500 dark:text-red-400 mt-2">
+                        Missing required fields.
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-slate-200 dark:border-gray-800 p-4 sm:p-6 transition-colors duration-300 overflow-x-auto flex justify-center shrink-0">
+                  <div className="w-full max-w-[800px] origin-top transition-transform">
+                    <DocumentPreview formData={formData} selectedTool={selectedTool} isPaid={isPaid} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
