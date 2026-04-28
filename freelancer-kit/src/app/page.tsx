@@ -16,7 +16,7 @@ export default function LandingPage() {
 
         <div className="inline-flex items-center space-x-2 bg-white dark:bg-gray-900 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-800 shadow-sm mb-8 animate-fade-in-up">
           <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">v2.0 is now live</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">v1.0 is now live</span>
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-8 leading-tight max-w-4xl">
