@@ -4,6 +4,22 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, FileSignature, FileText, Lock, CheckCircle2, Zap } from 'lucide-react';
 
+export function ArcadeEmbed() {
+  return (
+    <div style={{ position: 'relative', paddingBottom: 'calc(56.25% + 41px)', height: '0', width: '100%' }}>
+      <iframe
+        src="https://demo.arcade.software/96wmr4vOt6oDJazqBZMj?embed&embed_mobile=tab&embed_desktop=inline&show_copy_link=true"
+        title="FreelanceKit | Generate Professional Agreements Instantly"
+        frameBorder="0"
+        loading="lazy"
+        allowFullScreen
+        allow="clipboard-write"
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', colorScheme: 'dark' }}
+      />
+    </div>
+  )
+}
+
 export default function LandingPage() {
   return (
     <div className="bg-slate-50 dark:bg-gray-950 min-h-screen font-sans overflow-hidden transition-colors">
@@ -41,6 +57,13 @@ export default function LandingPage() {
           >
             See how it works
           </a>
+        </div>
+      </section>
+
+      {/* Demo Section */}
+      <section className="py-12 bg-transparent max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10 relative">
+        <div className="rounded-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 ring-1 ring-gray-900/5 dark:ring-white/10">
+          <ArcadeEmbed />
         </div>
       </section>
 
