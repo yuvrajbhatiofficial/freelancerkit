@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, CheckCircle2, Lock, Loader2, CreditCard } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useUserRegion } from '@/hooks/useUserRegion';
@@ -13,9 +14,14 @@ interface Props {
 
 export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }: Props) {
   const [loadingConfig, setLoadingConfig] = useState<'polar' | 'razorpay' | null>(null);
+  const [mounted, setMounted] = useState(false);
   const { isIndia } = useUserRegion();
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handlePayment = async (provider: 'polar' | 'razorpay') => {
     try {
@@ -125,8 +131,8 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
       <div
         className="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
         onClick={onClose}
@@ -205,4 +211,6 @@ export default function PricingModal({ isOpen, onClose, priceTag, paymentLink }:
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
