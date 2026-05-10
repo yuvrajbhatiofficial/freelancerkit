@@ -184,10 +184,7 @@ app.delete('/api/user/account', authenticate, async (req, res) => {
 app.post('/api/payments/create-polar-checkout', authenticate, async (req, res) => {
   try {
     const userRegion = req.headers['x-user-region'] || 'GLOBAL';
-    if (userRegion === 'IN') {
-      return res.status(403).json({ error: 'Indian users must use Razorpay' });
-    }
-
+    
     const checkout = await polar.checkouts.create({
       products: [process.env.POLAR_PRODUCT_ID || process.env.POLAR_PRODUCT_PRICE_ID || 'placeholder'],
       successUrl: `${req.headers.origin}/success?checkout_id={CHECKOUT_ID}`,
